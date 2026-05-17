@@ -420,7 +420,7 @@ letter-spacing:0.35em;
 color:rgba(245,240,232,0.2); text-align:center;
 }
 
-input[type=“file”] { display:none; }
+input[type=“file”] { display:none !important; position:absolute !important; width:0 !important; height:0 !important; opacity:0 !important; }
 </style>
 
 </head>
@@ -589,10 +589,7 @@ function startApp() {
       }
     }
   } catch(e) {}
-  const audio = document.getElementById('bgAudio');
-  audio.volume = 0.85;
-  audio.play().catch(()=>{});
-  musicOn = true;
+  musicOn = false;
   buildAll();
 }
 
@@ -869,6 +866,9 @@ window.addEventListener('resize', () => {
 function showCeremony() {
   const page = document.getElementById('ceremonyPage');
   document.getElementById('stampDate').textContent = getDate();
+  // Hide swiper behind ceremony
+  document.getElementById('swiperOuter').style.display = 'none';
+  document.getElementById('topBar').style.display = 'none';
   page.classList.add('show');
   requestAnimationFrame(() => requestAnimationFrame(() => {
     page.classList.add('visible');
@@ -908,11 +908,21 @@ function openVideo() {
 
 function closeVideo() {
   slideshowRunning = false;
+  // Stop music
+  const audio = document.getElementById('bgAudio');
+  audio.pause();
+  audio.currentTime = 0;
   document.getElementById('videoScreen').classList.remove('show');
   document.getElementById('videoCanvas').style.display = 'block';
   document.getElementById('videoImg').style.display = 'none';
   document.getElementById('playBtn').textContent = '▶ Play Slideshow';
   document.getElementById('playBtn').disabled = false;
+  // Restore swiper
+  document.getElementById('swiperOuter').style.display = 'block';
+  document.getElementById('topBar').style.display = 'block';
+  document.getElementById('ceremonyPage').classList.remove('visible','show');
+  document.getElementById('stamp').classList.remove('pop');
+  document.getElementById('cerBtn').classList.remove('show');
 }
 
 // ── SLIDESHOW ──
@@ -936,22 +946,28 @@ function playSlideshow() {
   document.getElementById('videoImg').style.display = 'none';
 
   // High-res canvas + correct CSS display size
-  const dpr = window.devicePixelRatio || 1;
+  const dpr = Math.min(window.devicePixelRatio || 1, 3);
   const W = window.innerWidth;
   const H = window.innerHeight;
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
+  canvas.width = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
   canvas.style.width = W + 'px';
   canvas.style.height = H + 'px';
   canvas.style.position = 'absolute';
   canvas.style.top = '0'; canvas.style.left = '0';
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
-  // From now on use W/H in logical pixels — canvas auto-scales via dpr
+  ctx.clearRect(0, 0, W, H);
 
   const btn = document.getElementById('playBtn');
   btn.textContent = '▶ Playing...'; btn.disabled = true;
   slideshowRunning = true;
+
+  // Start music with video
+  const audio = document.getElementById('bgAudio');
+  audio.currentTime = 0;
+  audio.volume = 0.85;
+  audio.play().catch(()=>{});
 
   // Preload photos
   const imgObjs = photos.map(src => {
