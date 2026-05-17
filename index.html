@@ -420,7 +420,7 @@ letter-spacing:0.35em;
 color:rgba(245,240,232,0.2); text-align:center;
 }
 
-input[type=“file”] { display:none !important; position:absolute !important; width:0 !important; height:0 !important; opacity:0 !important; }
+input[type=“file”] { display:none !important; position:fixed !important; top:-9999px !important; left:-9999px !important; width:0 !important; height:0 !important; opacity:0 !important; pointer-events:none !important; }
 </style>
 
 </head>
@@ -979,12 +979,12 @@ function playSlideshow() {
 
   const FPS = 30;
   const INTRO_DUR   = Math.round(FPS * 6);
-  const HOLD        = Math.round(FPS * 4.0);
-  const FADE        = Math.round(FPS * 1.8);
+  const HOLD        = Math.round(FPS * 5.0);
+  const FADE        = Math.round(FPS * 2.5);
   const PER         = HOLD + FADE;
   const TOTAL_PHOTOS = STATION_TAGS.length * PER;
   const SUMMARY_DUR = Math.round(FPS * 9);
-  const THANKS_DUR  = Math.round(FPS * 6);
+  const THANKS_DUR  = Math.round(FPS * 8);
 
   const PHOTOS_START  = INTRO_DUR;
   const SUMMARY_START = PHOTOS_START + TOTAL_PHOTOS;
@@ -1194,7 +1194,7 @@ function playSlideshow() {
       const pf = f - PHOTOS_START;
       const cardIdx = Math.floor(pf / PER);
       const fi = pf % PER;
-      const inA = fi < FPS*0.5 ? fi/(FPS*0.5) : 1;
+      const inA = fi < FPS*1.2 ? fi/(FPS*1.2) : 1;
       const outA = fi >= HOLD ? Math.max(0, 1-(fi-HOLD)/FADE) : 1;
       drawPhoto(imgObjs[cardIdx], Math.min(inA, outA));
       drawOverlay(cardIdx, Math.min(inA, outA));
