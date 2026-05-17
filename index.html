@@ -541,7 +541,6 @@ input[type=“file”] { display:none !important; position:fixed !important; top
   </div>
 </div>
 
-<input type="file" id="fileInput" accept="image/*">
 <audio id="bgAudio" loop preload="auto">
   <source src="where_the_willow_bends.mp3" type="audio/mpeg">
 </audio>
@@ -760,12 +759,17 @@ function buildKamo(card, s, i) {
 // ── UPLOAD ──
 function triggerUpload(target) {
   uploadTarget = target;
-  const fi = document.getElementById('fileInput');
+  // Create fresh file input each time — prevents browser UI leaking
+  const fi = document.createElement('input');
+  fi.type = 'file';
+  fi.accept = 'image/*';
+  fi.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:0;height:0;opacity:0;';
+  document.body.appendChild(fi);
   fi.onchange = e => {
-    const file = e.target.files[0]; if (!file) return;
+    const file = e.target.files[0];
+    if (!file) { document.body.removeChild(fi); return; }
     const reader = new FileReader();
     reader.onload = ev => {
-      // Compress image before storing to avoid localStorage 5MB limit
       const img = new Image();
       img.onload = () => {
         const maxW = 1080;
@@ -777,11 +781,9 @@ function triggerUpload(target) {
         offCtx.drawImage(img, 0, 0, offCanvas.width, offCanvas.height);
         const compressed = offCanvas.toDataURL('image/jpeg', 0.82);
         photos[uploadTarget] = compressed;
-        try {
-          localStorage.setItem('ak_photos', JSON.stringify(photos));
-        } catch(e) {}
+        try { localStorage.setItem('ak_photos', JSON.stringify(photos)); } catch(e) {}
         renderSlide(uploadTarget);
-        fi.value = '';
+        document.body.removeChild(fi);
       };
       img.src = ev.target.result;
     };
@@ -978,7 +980,7 @@ function playSlideshow() {
   });
 
   const FPS = 30;
-  const INTRO_DUR   = Math.round(FPS * 6);
+  const INTRO_DUR   = Math.round(FPS * 7);
   const HOLD        = Math.round(FPS * 5.0);
   const FADE        = Math.round(FPS * 2.5);
   const PER         = HOLD + FADE;
