@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Amazing Kyoto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Noto+Serif+JP:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --dark: #1a1410;
+  --dark2: #1e1a14;
+  --washi: #f5f0e8;
+  --gold: #a07840;
+  --gold-dim: rgba(160,120,64,0.4);
+  --gold-faint: rgba(160,120,64,0.15);
+}
+
+- { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; }
+  html, body { width:100%; height:100%; overflow:hidden; background:var(–dark); font-family:‘DM Sans’, sans-serif; color:var(–washi); }
+
+/* ── SPLASH ── */
+#splash {
+position:fixed; inset:0; z-index:100;
+background:var(–dark);
+display:flex; flex-direction:column;
+align-items:center; justify-content:center;
+gap:16px; padding:48px 36px;
+transition:opacity 0.8s ease;
+}
+#splash.hide { opacity:0; pointer-events:none; }
+
+.sp-brand {
+font-size:10px; font-weight:500;
+letter-spacing:0.7em; color:var(–gold);
+text-transform:uppercase; margin-bottom:8px;
+}
+.sp-title {
+font-size:30px; font-weight:700;
+color:var(–washi); text-align:center;
+line-height:1.15; letter-spacing:-0.01em;
+}
+.sp-sub {
+font-size:30px; font-weight:400;
+font-style:italic;
+color:rgba(245,240,232,0.6);
+text-align:center; line-height:1.15;
+letter-spacing:-0.01em;
+}
+.sp-line { width:32px; height:1px; background:var(–gold-dim); margin:8px 0; }
+.sp-btn {
+margin-top:16px; padding:18px 52px;
+background:transparent;
+border:1px solid var(–gold-dim);
+color:var(–gold); font-size:12px;
+font-weight:500; letter-spacing:0.6em;
+text-transform:uppercase; cursor:pointer;
+transition:all 0.3s;
+}
+.sp-btn:active { background:var(–gold-faint); }
+
+/* ── TOP BAR ── */
+#topBar {
+position:fixed; top:0; left:0; right:0; z-index:40;
+padding:16px 20px;
+pointer-events:none;
+}
+
+/* Progress bar */
+.prog-bar {
+display:flex; gap:6px; margin-bottom:0;
+}
+.prog-item {
+flex:1; display:flex;
+flex-direction:column; align-items:center; gap:5px;
+}
+.prog-box {
+width:100%; height:26px;
+border:1px solid rgba(245,240,232,0.15);
+background:rgba(245,240,232,0.04);
+display:flex; align-items:center; justify-content:center;
+transition:all 0.3s;
+}
+.prog-box.active {
+border-color:var(–gold);
+background:var(–gold-faint);
+}
+.prog-box.done {
+border-color:rgba(245,240,232,0.2);
+background:rgba(245,240,232,0.08);
+}
+.prog-name {
+font-family:‘Noto Serif JP’, serif;
+font-size:11px; font-weight:400;
+color:rgba(245,240,232,0.25);
+letter-spacing:0.05em; text-align:center;
+}
+.prog-name.active { color:var(–gold); font-weight:500; }
+.prog-name.done { color:rgba(245,240,232,0.4); }
+
+/* music button removed */
+
+/* ── SWIPER ── */
+#swiperOuter { position:fixed; inset:0; overflow:hidden; }
+#swiperTrack {
+display:flex; height:100%;
+transition:transform 0.45s cubic-bezier(0.25,0.46,0.45,0.94);
+will-change:transform;
+}
+
+/* ── SLIDE ── */
+.slide {
+min-width:100vw; height:100vh;
+display:flex; flex-direction:column;
+align-items:center;
+padding:0 20px 12px;
+padding-top:68px;
+background:var(–dark);
+}
+
+/* Card fills remaining height */
+.card {
+width:100%; max-width:380px;
+flex:1;
+position:relative; overflow:hidden;
+background:var(–dark2);
+box-shadow:0 8px 40px rgba(0,0,0,0.5);
+}
+
+/* Photo as img for long-press save */
+.card-img {
+position:absolute; inset:0;
+width:100%; height:100%;
+object-fit:cover; display:block;
+cursor:pointer;
+}
+
+/* Gradients */
+.g-top {
+position:absolute; inset:0; z-index:2;
+background:linear-gradient(to bottom, rgba(10,8,6,0.72) 0%, rgba(10,8,6,0.2) 22%, transparent 42%);
+pointer-events:none;
+}
+.g-bot {
+position:absolute; inset:0; z-index:2;
+background:linear-gradient(to top, rgba(10,8,6,0.96) 0%, rgba(10,8,6,0.65) 22%, rgba(10,8,6,0.08) 52%, transparent 68%);
+pointer-events:none;
+}
+
+/* Empty state */
+.empty-state {
+position:absolute; inset:0; z-index:5;
+display:flex; flex-direction:column;
+align-items:center; justify-content:center;
+gap:14px; cursor:pointer;
+padding-bottom:22%;
+}
+.empty-state.gone { display:none; }
+.e-circle {
+width:72px; height:72px; border-radius:50%;
+border:1px solid var(–gold-dim);
+display:flex; align-items:center; justify-content:center;
+color:var(–gold); font-size:28px; font-weight:200;
+}
+.e-label {
+font-size:13px; font-weight:600;
+letter-spacing:0.55em; color:var(–gold);
+text-transform:uppercase;
+}
+
+/* Tap to change hint - removed */
+.tap-change { display:none; }
+
+/* Card header */
+.c-header {
+position:absolute; top:0; left:0; right:0; z-index:6;
+padding:14px 16px 0;
+display:flex; justify-content:space-between; align-items:flex-start;
+pointer-events:none;
+}
+.c-brand {
+font-size:9px; font-weight:500;
+letter-spacing:0.55em;
+color:rgba(245,240,232,0.4);
+text-transform:uppercase; margin-top:3px;
+line-height:1.6;
+}
+.c-location-en {
+font-size:clamp(24px, 6.5vw, 32px);
+font-weight:700;
+letter-spacing:0.02em;
+color:rgba(245,240,232,0.9);
+text-transform:uppercase;
+line-height:1.0; text-align:right;
+display:block;
+text-shadow:0 2px 12px rgba(0,0,0,0.5);
+}
+
+/* Card footer */
+.c-footer {
+position:absolute; bottom:0; left:0; right:0; z-index:6;
+padding:0 16px 15px; pointer-events:none;
+}
+.c-tagline {
+font-size:clamp(20px, 5.8vw, 26px);
+font-weight:600; font-style:italic;
+color:var(–washi); line-height:1.2;
+margin-bottom:9px; letter-spacing:-0.01em;
+text-shadow:0 2px 20px rgba(0,0,0,0.6);
+}
+.c-haiku {
+font-family:‘Noto Serif JP’, serif;
+font-size:clamp(12px, 3.2vw, 14px);
+font-weight:400;
+color:rgba(245,240,232,0.6);
+letter-spacing:0.12em;
+white-space:nowrap; overflow:hidden;
+text-overflow:ellipsis;
+display:block; margin-bottom:11px;
+}
+.c-meta {
+display:flex; justify-content:space-between; align-items:center;
+padding-top:8px;
+border-top:1px solid rgba(245,240,232,0.1);
+}
+.c-date {
+font-size:10px; font-weight:400;
+letter-spacing:0.4em;
+color:rgba(245,240,232,0.28);
+}
+.c-brand-bot {
+font-size:10px; font-weight:500;
+letter-spacing:0.3em;
+color:rgba(160,120,64,0.5);
+}
+
+/* Corners */
+.corner { position:absolute; width:14px; height:14px; z-index:7; }
+.corner.tl { top:9px; left:9px; border-top:1px solid var(–gold-dim); border-left:1px solid var(–gold-dim); }
+.corner.tr { top:9px; right:9px; border-top:1px solid var(–gold-dim); border-right:1px solid var(–gold-dim); }
+.corner.bl { bottom:9px; left:9px; border-bottom:1px solid var(–gold-dim); border-left:1px solid var(–gold-dim); }
+.corner.br { bottom:9px; right:9px; border-bottom:1px solid var(–gold-dim); border-right:1px solid var(–gold-dim); }
+
+/* Below card nav */
+.card-nav {
+width:100%; max-width:380px;
+margin-top:10px;
+display:flex; gap:8px;
+}
+.nav-save {
+flex:1; padding:13px;
+background:transparent;
+border:1px solid rgba(245,240,232,0.12);
+color:rgba(245,240,232,0.5);
+font-size:11px; font-weight:700;
+letter-spacing:0.5em; text-transform:uppercase;
+cursor:pointer; transition:all 0.3s;
+}
+.nav-save:active { background:rgba(245,240,232,0.06); }
+.nav-next {
+flex:1; padding:13px;
+background:var(–gold-faint);
+border:1px solid var(–gold-dim);
+color:var(–gold);
+font-size:11px; font-weight:700;
+letter-spacing:0.5em; text-transform:uppercase;
+cursor:pointer; transition:all 0.3s;
+}
+.nav-next:active { background:rgba(160,120,64,0.25); }
+.nav-prev {
+padding:13px 18px;
+background:transparent;
+border:1px solid rgba(245,240,232,0.1);
+color:rgba(245,240,232,0.5);
+font-size:11px; font-weight:700;
+letter-spacing:0.3em;
+cursor:pointer;
+}
+.nav-prev:active { background:rgba(245,240,232,0.05); }
+.nav-prev:active { background:rgba(245,240,232,0.05); }
+
+/* ── KAMO ── */
+.kamo-upload-zone {
+position:absolute; inset:0; z-index:5;
+display:flex; flex-direction:column;
+align-items:center; justify-content:center;
+gap:14px; cursor:pointer;
+padding-bottom:22%;
+}
+.kamo-upload-zone.gone { display:none; }
+.kamo-divider {
+position:absolute; top:50%; left:16px; right:16px;
+height:1px; background:rgba(245,240,232,0.15); z-index:3;
+pointer-events:none;
+}
+.kamo-text-top {
+position:absolute; top:20%; left:16px; right:16px; z-index:7;
+pointer-events:none;
+}
+.kamo-text-bot {
+position:absolute; bottom:16%; left:16px; right:16px; z-index:7;
+pointer-events:none;
+}
+.kamo-tag {
+font-size:clamp(22px, 6vw, 28px);
+font-weight:600; font-style:italic;
+color:var(–washi); line-height:1.2;
+text-shadow:0 2px 20px rgba(0,0,0,0.6);
+}
+.kamo-haiku {
+font-family:‘Noto Serif JP’, serif;
+font-size:clamp(12px, 3vw, 13px);
+font-weight:400;
+color:rgba(245,240,232,0.58);
+letter-spacing:0.12em;
+margin-top:5px; display:block;
+white-space:nowrap;
+}
+
+/* ── CEREMONY ── */
+#ceremonyPage {
+position:fixed; inset:0; z-index:50;
+background:var(–dark);
+display:none; flex-direction:column;
+align-items:center; justify-content:center;
+gap:28px; padding:48px 32px;
+opacity:0; transition:opacity 0.8s ease;
+}
+#ceremonyPage.show { display:flex; }
+#ceremonyPage.visible { opacity:1; }
+
+.cer-brand {
+font-size:10px; font-weight:500;
+letter-spacing:0.7em; color:rgba(160,120,64,0.6);
+text-transform:uppercase;
+}
+
+/* Stamp */
+/* Stamp down animation - slow, no bounce */
+@keyframes stampDown {
+0%   { opacity:0; transform:scale(1.08) translateY(-18px); }
+75%  { opacity:1; transform:scale(1.0) translateY(0px); }
+100% { opacity:1; transform:scale(1) translateY(0); }
+}
+
+#stamp {
+width:192px; height:192px;
+opacity:0;
+}
+#stamp.pop {
+animation:stampDown 1.4s ease forwards;
+}
+#stamp svg { width:100%; height:100%; }
+
+.cer-line { width:36px; height:1px; background:var(–gold-dim); }
+
+.cer-btn {
+width:100%; max-width:300px; padding:18px;
+background:transparent;
+border:1px solid var(–gold-dim);
+color:var(–gold); font-size:11px;
+font-weight:500; letter-spacing:0.6em;
+text-transform:uppercase; cursor:pointer;
+opacity:0; transition:opacity 0.5s ease 0.9s;
+}
+.cer-btn.show { opacity:1; }
+.cer-btn:active { background:var(–gold-faint); }
+
+/* ── VIDEO ── */
+#videoScreen {
+position:fixed; inset:0; z-index:60;
+background:var(–dark);
+display:none; flex-direction:column;
+}
+#videoScreen.show { display:flex; }
+
+#videoWrap {
+flex:1; position:relative;
+display:flex; align-items:center; justify-content:center;
+overflow:hidden;
+}
+#videoCanvas { position:absolute; inset:0; width:100%; height:100%; display:block; }
+#videoImg {
+position:absolute; inset:0;
+width:100%; height:100%;
+object-fit:contain; display:none; cursor:pointer;
+}
+
+.vid-close {
+position:absolute; top:20px; left:20px; z-index:10;
+background:rgba(26,20,16,0.65); border:none;
+color:rgba(245,240,232,0.6); font-size:11px;
+font-weight:500; letter-spacing:0.3em;
+padding:10px 15px; cursor:pointer;
+}
+
+.vid-controls {
+padding:16px 20px 36px;
+display:flex; flex-direction:column; gap:10px;
+background:var(–dark);
+}
+.vid-play {
+width:100%; padding:17px;
+background:rgba(245,240,232,0.06);
+border:1px solid rgba(245,240,232,0.2);
+color:rgba(245,240,232,0.8); font-size:12px;
+font-weight:700; letter-spacing:0.6em;
+text-transform:uppercase; cursor:pointer;
+transition:all 0.3s;
+}
+.vid-play:active { background:rgba(245,240,232,0.12); }
+.vid-hint {
+font-size:10px; font-weight:400;
+letter-spacing:0.35em;
+color:rgba(245,240,232,0.2); text-align:center;
+}
+
+input[type=“file”] { display:none; }
+</style>
+
+</head>
+<body>
+
+<!-- Splash -->
+
+<div id="splash">
+  <div class="sp-brand">Amazing Kyoto</div>
+  <div class="sp-title">Four Moments</div>
+  <div class="sp-sub">One Kyoto Afternoon</div>
+  <div class="sp-line"></div>
+  <button class="sp-btn" onclick="startApp()">Begin →</button>
+</div>
+
+<!-- Top bar -->
+
+<div id="topBar">
+  <div class="prog-bar" id="progBar">
+    <div class="prog-item">
+      <div class="prog-box active" id="pb0"><div class="prog-name active" id="pn0">白川</div></div>
+    </div>
+    <div class="prog-item">
+      <div class="prog-box" id="pb1"><div class="prog-name" id="pn1">平安神宮</div></div>
+    </div>
+    <div class="prog-item">
+      <div class="prog-box" id="pb2"><div class="prog-name" id="pn2">南禅寺</div></div>
+    </div>
+    <div class="prog-item">
+      <div class="prog-box" id="pb3"><div class="prog-name" id="pn3">鴨川</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- Swiper -->
+
+<div id="swiperOuter">
+  <div id="swiperTrack"></div>
+</div>
+
+<!-- Ceremony -->
+
+<div id="ceremonyPage">
+  <div class="cer-brand">Amazing Kyoto</div>
+  <div id="stamp">
+    <svg viewBox="0 0 220 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <path id="topArc" d="M 16,110 A 94,94 0 0,1 204,110"/>
+        <path id="botArc" d="M 20,114 A 90,90 0 0,0 200,114"/>
+        <clipPath id="innerClip"><circle cx="110" cy="110" r="92"/></clipPath>
+      </defs>
+      <!-- Rings -->
+      <circle cx="110" cy="110" r="107" stroke="#a07840" stroke-width="2.5"/>
+      <circle cx="110" cy="110" r="94" stroke="#a07840" stroke-width="1"/>
+      <!-- Arc texts -->
+      <text font-family="DM Sans" font-size="10" font-weight="600" fill="rgba(160,120,64,0.85)" letter-spacing="5.5" text-anchor="middle">
+        <textPath href="#topArc" startOffset="50%">AFTERNOON CYCLING · KYOTO</textPath>
+      </text>
+      <text font-family="DM Sans" font-size="9.5" font-weight="500" fill="rgba(160,120,64,0.65)" letter-spacing="5" text-anchor="middle">
+        <textPath href="#botArc" startOffset="50%">AMAZING KYOTO · JAPAN</textPath>
+      </text>
+      <!-- Seigaiha pattern -->
+      <g clip-path="url(#innerClip)">
+        <g stroke="#a07840" stroke-width="1.2" fill="rgba(160,120,64,0.07)">
+          <path d="M54 82 A28,28 0 0,1 110 82 Z"/>
+          <path d="M110 82 A28,28 0 0,1 166 82 Z"/>
+          <path d="M26 110 A28,28 0 0,1 82 110 Z"/>
+          <path d="M82 110 A28,28 0 0,1 138 110 Z"/>
+          <path d="M138 110 A28,28 0 0,1 194 110 Z"/>
+          <path d="M54 138 A28,28 0 0,1 110 138 Z"/>
+          <path d="M110 138 A28,28 0 0,1 166 138 Z"/>
+          <path d="M26 166 A28,28 0 0,1 82 166 Z"/>
+          <path d="M82 166 A28,28 0 0,1 138 166 Z"/>
+          <path d="M138 166 A28,28 0 0,1 194 166 Z"/>
+          <path d="M54 54 A28,28 0 0,1 110 54 Z"/>
+          <path d="M110 54 A28,28 0 0,1 166 54 Z"/>
+        </g>
+        <g stroke="#a07840" stroke-width="0.7" fill="none" opacity="0.4">
+          <path d="M58 82 A24,24 0 0,1 106 82"/>
+          <path d="M114 82 A24,24 0 0,1 162 82"/>
+          <path d="M30 110 A24,24 0 0,1 78 110"/>
+          <path d="M86 110 A24,24 0 0,1 134 110"/>
+          <path d="M142 110 A24,24 0 0,1 190 110"/>
+          <path d="M58 138 A24,24 0 0,1 106 138"/>
+          <path d="M114 138 A24,24 0 0,1 162 138"/>
+          <path d="M30 166 A24,24 0 0,1 78 166"/>
+          <path d="M86 166 A24,24 0 0,1 134 166"/>
+          <path d="M142 166 A24,24 0 0,1 190 166"/>
+        </g>
+        <line x1="16" y1="82" x2="204" y2="82" stroke="#a07840" stroke-width="0.8" opacity="0.25"/>
+        <line x1="16" y1="110" x2="204" y2="110" stroke="#a07840" stroke-width="0.8" opacity="0.25"/>
+        <line x1="16" y1="138" x2="204" y2="138" stroke="#a07840" stroke-width="0.8" opacity="0.25"/>
+        <line x1="16" y1="166" x2="204" y2="166" stroke="#a07840" stroke-width="0.8" opacity="0.25"/>
+      </g>
+      <!-- Center medallion -->
+      <circle cx="110" cy="110" r="40" fill="#1a1410" stroke="#a07840" stroke-width="1.5"/>
+      <circle cx="110" cy="110" r="36" stroke="rgba(160,120,64,0.3)" stroke-width="0.8" fill="none"/>
+      <text x="110" y="105" font-family="Noto Serif JP" font-size="22" font-weight="500" fill="#a07840" text-anchor="middle" letter-spacing="5">京都</text>
+      <text x="110" y="120" font-family="DM Sans" font-size="7.5" font-weight="400" fill="rgba(160,120,64,0.55)" text-anchor="middle" letter-spacing="2.5" id="stampDate">2026.05.17</text>
+    </svg>
+  </div>
+  <div class="cer-line"></div>
+  <button class="cer-btn" id="cerBtn" onclick="openVideo()">▶ Create Your Video</button>
+  <button onclick="resetAll()" style="margin-top:8px;background:transparent;border:none;color:rgba(160,120,64,0.3);font-family:'DM Sans',sans-serif;font-size:9px;letter-spacing:0.4em;cursor:pointer;text-transform:uppercase;">Reset for next guest</button>
+</div>
+
+<!-- Video -->
+
+<div id="videoScreen">
+  <div id="videoWrap">
+    <canvas id="videoCanvas"></canvas>
+    <img id="videoImg" alt="slideshow">
+  </div>
+  <button class="vid-close" onclick="closeVideo()">✕ Back</button>
+  <div class="vid-controls">
+    <button class="vid-play" id="playBtn" onclick="playSlideshow()">▶ Play Slideshow</button>
+    <div class="vid-hint">Long-press to save · 長押しで保存</div>
+  </div>
+</div>
+
+<input type="file" id="fileInput" accept="image/*">
+<audio id="bgAudio" loop preload="auto">
+  <source src="where_the_willow_bends.mp3" type="audio/mpeg">
+</audio>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+const STATIONS = [
+  { id:0, type:'single', name:'Shirakawa', nameJP:'白川',
+    tag:"The city rushes past\nThe willow doesn't notice",
+    haiku:'柳揺れ　街の急ぎを　知らぬまま' },
+  { id:1, type:'single', name:'Heian Shrine', nameJP:'平安神宮',
+    tag:"Stand here long enough\nand the centuries blur",
+    haiku:'朱の門　千年の風　今も吹く' },
+  { id:2, type:'single', name:'Nanzen-ji', nameJP:'南禅寺',
+    tag:"Step through\nThe cool breeze comes of itself",
+    haiku:'この門を入れば　涼風おのつから' },
+  { id:3, type:'kamo', name:'Kamo River', nameJP:'鴨川',
+    tagTop:'Cross it', haikuTop:'石伝い　水の声だけ　聞こえくる',
+    tagBot:'Then forget\neverything', haikuBot:'川の音　何も考えず　ただ在る' }
+];
+
+let current = 0;
+let photos = [null, null, null, null];
+let uploadTarget = null;
+let musicOn = false;
+let slideshowRunning = false;
+
+function getDate() {
+  const d = new Date();
+  return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// ── MUSIC ──
+function startApp() {
+  document.getElementById('splash').classList.add('hide');
+  setTimeout(() => document.getElementById('splash').style.display='none', 800);
+  // Load saved photos from localStorage
+  try {
+    const saved = localStorage.getItem('ak_photos');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length === 4) {
+        photos = parsed;
+      }
+    }
+  } catch(e) {}
+  const audio = document.getElementById('bgAudio');
+  audio.volume = 0.85;
+  audio.play().catch(()=>{});
+  musicOn = true;
+  buildAll();
+}
+
+// ── BUILD ──
+function buildAll() {
+  const track = document.getElementById('swiperTrack');
+  track.innerHTML = '';
+  STATIONS.forEach((_,i) => {
+    const slide = document.createElement('div');
+    slide.className = 'slide';
+    slide.id = `slide-${i}`;
+    track.appendChild(slide);
+  });
+  STATIONS.forEach((_,i) => renderSlide(i));
+  updateUI();
+}
+
+function el(tag, cls) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  return e;
+}
+
+function renderSlide(i) {
+  const s = STATIONS[i];
+  const slide = document.getElementById(`slide-${i}`);
+  slide.innerHTML = '';
+
+  const card = el('div','card');
+  card.id = `card-${i}`;
+  slide.appendChild(card);
+
+  if (s.type === 'single') buildSingle(card, s, i);
+  else buildKamo(card, s, i);
+
+  // Below card nav
+  const nav = el('div','card-nav');
+  if (i > 0) {
+    const prev = document.createElement('button');
+    prev.className = 'nav-prev';
+    prev.textContent = '←';
+    prev.onclick = () => goTo(i-1);
+    nav.appendChild(prev);
+  }
+  const save = document.createElement('button');
+  save.className = 'nav-save';
+  save.textContent = '↓ Save';
+  save.onclick = () => saveCard(i);
+  nav.appendChild(save);
+
+  const next = document.createElement('button');
+  next.className = 'nav-next';
+  next.textContent = i < 3 ? 'Next →' : 'Next →';
+  next.onclick = () => {
+    if (i < 3) goTo(i+1);
+    else showCeremony();
+  };
+  nav.appendChild(next);
+
+  slide.appendChild(nav);
+  updateUI();
+}
+
+function buildSingle(card, s, i) {
+  const photo = photos[i];
+
+  if (photo) {
+    // Photo as img — long-press saves, tap changes
+    const img = document.createElement('img');
+    img.className = 'card-img';
+    img.src = photo;
+    img.onclick = () => triggerUpload(i);
+    card.appendChild(img);
+
+    card.appendChild(el('div','g-top'));
+    card.appendChild(el('div','g-bot'));
+
+    const hint = el('div','tap-change');
+    hint.textContent = 'TAP TO CHANGE';
+    card.appendChild(hint);
+  } else {
+    card.style.background = '#1e1a14';
+    const empty = el('div','empty-state');
+    empty.innerHTML = `<div class="e-circle">＋</div><div class="e-label">Add Photo</div>`;
+    empty.onclick = () => triggerUpload(i);
+    card.appendChild(empty);
+
+    // Faint tagline preview
+    const ftr = el('div','c-footer');
+    ftr.innerHTML = `<div class="c-tagline" style="color:rgba(245,240,232,0.08)">${s.tag.replace(/\n/g,'<br>')}</div>
+      <span class="c-haiku" style="color:rgba(245,240,232,0.05)">${s.haiku}</span>`;
+    card.appendChild(ftr);
+  }
+
+  ['tl','tr','bl','br'].forEach(c => card.appendChild(el('div',`corner ${c}`)));
+
+  const hdr = el('div','c-header');
+  hdr.innerHTML = `<div class="c-brand">Amazing<br>Kyoto</div>
+    <span class="c-location-en">${s.name}</span>`;
+  card.appendChild(hdr);
+
+  if (photo) {
+    const ftr = el('div','c-footer');
+    ftr.innerHTML = `
+      <div class="c-tagline">${s.tag.replace(/\n/g,'<br>')}</div>
+      <span class="c-haiku">${s.haiku}</span>
+      <div class="c-meta">
+        <div class="c-date">${getDate()}</div>
+        <div class="c-brand-bot">Amazing Kyoto</div>
+      </div>`;
+    card.appendChild(ftr);
+  }
+}
+
+function buildKamo(card, s, i) {
+  const photo = photos[3];
+
+  if (photo) {
+    const img = document.createElement('img');
+    img.className = 'card-img';
+    img.src = photo;
+    img.onclick = () => triggerUpload(3);
+    card.appendChild(img);
+    card.appendChild(el('div','g-top'));
+    card.appendChild(el('div','g-bot'));
+
+    const hint = el('div','tap-change');
+    hint.textContent = 'TAP TO CHANGE';
+    card.appendChild(hint);
+
+    card.appendChild(el('div','kamo-divider'));
+
+    const tt = el('div','kamo-text-top');
+    tt.innerHTML = `<div class="kamo-tag">${s.tagTop}</div><span class="kamo-haiku">${s.haikuTop}</span>`;
+    card.appendChild(tt);
+
+    const tb = el('div','kamo-text-bot');
+    tb.innerHTML = `<div class="kamo-tag">${s.tagBot.replace(/\n/g,'<br>')}</div>
+      <span class="kamo-haiku">${s.haikuBot}</span>
+      <div class="c-meta" style="margin-top:10px;padding-top:8px;border-top:1px solid rgba(245,240,232,0.1)">
+        <div class="c-date">${getDate()}</div>
+        <div class="c-brand-bot">Amazing Kyoto</div>
+      </div>`;
+    card.appendChild(tb);
+  } else {
+    card.style.background = '#1e1a14';
+    const uz = el('div','kamo-upload-zone');
+    uz.innerHTML = `<div class="e-circle">＋</div><div class="e-label">Add Photo</div>`;
+    uz.onclick = () => triggerUpload(3);
+    card.appendChild(uz);
+
+    const tt = el('div','kamo-text-top');
+    tt.innerHTML = `<div class="kamo-tag" style="color:rgba(245,240,232,0.08)">${s.tagTop}</div>`;
+    card.appendChild(tt);
+    const tb = el('div','kamo-text-bot');
+    tb.innerHTML = `<div class="kamo-tag" style="color:rgba(245,240,232,0.08)">${s.tagBot.replace(/\n/g,'<br>')}</div>`;
+    card.appendChild(tb);
+  }
+
+  ['tl','tr','bl','br'].forEach(c => card.appendChild(el('div',`corner ${c}`)));
+
+  const hdr = el('div','c-header');
+  hdr.innerHTML = `<div class="c-brand">Amazing<br>Kyoto</div>
+    <span class="c-location-en">${s.name}</span>`;
+  card.appendChild(hdr);
+}
+
+// ── UPLOAD ──
+function triggerUpload(target) {
+  uploadTarget = target;
+  const fi = document.getElementById('fileInput');
+  fi.onchange = e => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      // Compress image before storing to avoid localStorage 5MB limit
+      const img = new Image();
+      img.onload = () => {
+        const maxW = 1080;
+        const scale = Math.min(1, maxW / img.width);
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = img.width * scale;
+        offCanvas.height = img.height * scale;
+        const offCtx = offCanvas.getContext('2d');
+        offCtx.drawImage(img, 0, 0, offCanvas.width, offCanvas.height);
+        const compressed = offCanvas.toDataURL('image/jpeg', 0.82);
+        photos[uploadTarget] = compressed;
+        try {
+          localStorage.setItem('ak_photos', JSON.stringify(photos));
+        } catch(e) {}
+        renderSlide(uploadTarget);
+        fi.value = '';
+      };
+      img.src = ev.target.result;
+    };
+    reader.readAsDataURL(file);
+  };
+  fi.click();
+}
+
+function checkAllDone() {
+  if (photos[0] && photos[1] && photos[2] && photos[3]) {
+    setTimeout(() => showCeremony(), 500);
+  }
+}
+
+// ── SAVE CARD ──
+async function saveCard(i) {
+  const card = document.getElementById(`card-${i}`);
+  if (!card) return;
+  try {
+    const c = await html2canvas(card, {
+      scale: window.devicePixelRatio * 2,
+      useCORS: true, allowTaint: true, logging: false
+    });
+    const img = document.createElement('img');
+    img.src = c.toDataURL('image/jpeg', 0.95);
+    img.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;';
+    document.body.appendChild(img);
+    // On iOS, show as full-screen img for long-press save
+    const overlay = el('div');
+    overlay.style.cssText = `position:fixed;inset:0;z-index:200;background:#000;display:flex;align-items:center;justify-content:center;`;
+    const si = document.createElement('img');
+    si.src = c.toDataURL('image/jpeg', 0.95);
+    si.style.cssText = 'max-width:100%;max-height:100%;object-fit:contain;';
+    const closeBtn = document.createElement('button');
+    closeBtn.style.cssText = `position:absolute;top:20px;right:20px;background:rgba(0,0,0,0.5);border:none;color:white;font-size:14px;padding:10px 16px;letter-spacing:0.3em;cursor:pointer;`;
+    closeBtn.textContent = '✕ Close';
+    closeBtn.onclick = () => document.body.removeChild(overlay);
+    overlay.appendChild(si);
+    overlay.appendChild(closeBtn);
+    document.body.appendChild(overlay);
+  } catch(e) { alert('Please try again.'); }
+}
+
+// ── NAV ──
+function goTo(idx) {
+  if (idx < 0 || idx > 3) return;
+  current = idx;
+  const w = document.getElementById('swiperOuter').offsetWidth;
+  document.getElementById('swiperTrack').style.transform = `translateX(-${idx*w}px)`;
+  updateUI();
+}
+
+function updateUI() {
+  for (let i = 0; i < 4; i++) {
+    const pb = document.getElementById(`pb${i}`);
+    const pn = document.getElementById(`pn${i}`);
+    if (!pb || !pn) continue;
+    const done = !!photos[i];
+    pb.className = 'prog-box' + (done ? ' done' : (i === current ? ' active' : ''));
+    pn.className = 'prog-name' + (done ? ' done' : (i === current ? ' active' : ''));
+  }
+}
+
+// ── TOUCH SWIPE ──
+let sx = 0, sy = 0;
+document.getElementById('swiperOuter').addEventListener('touchstart', e => {
+  sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+}, { passive:true });
+document.getElementById('swiperOuter').addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - sx;
+  const dy = e.changedTouches[0].clientY - sy;
+  if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 45) {
+    dx < 0 ? goTo(current+1) : goTo(current-1);
+  }
+}, { passive:true });
+window.addEventListener('resize', () => {
+  const w = document.getElementById('swiperOuter').offsetWidth;
+  document.getElementById('swiperTrack').style.transform = `translateX(-${current*w}px)`;
+});
+
+// ── CEREMONY ──
+function showCeremony() {
+  const page = document.getElementById('ceremonyPage');
+  document.getElementById('stampDate').textContent = getDate();
+  page.classList.add('show');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    page.classList.add('visible');
+    setTimeout(() => {
+      document.getElementById('stamp').classList.add('pop');
+      setTimeout(() => document.getElementById('cerBtn').classList.add('show'), 400);
+    }, 400);
+  }));
+}
+
+function resetAll() {
+  if (!confirm('Reset for next guest? All photos will be cleared.')) return;
+  photos = [null, null, null, null];
+  try { localStorage.removeItem('ak_photos'); } catch(e) {}
+  document.getElementById('ceremonyPage').classList.remove('visible','show');
+  document.getElementById('stamp').classList.remove('pop');
+  document.getElementById('cerBtn').classList.remove('show');
+  current = 0;
+  buildAll();
+  goTo(0);
+}
+
+function openVideo() {
+  document.getElementById('ceremonyPage').classList.remove('visible');
+  setTimeout(() => {
+    document.getElementById('ceremonyPage').classList.remove('show');
+    const vs = document.getElementById('videoScreen');
+    vs.classList.add('show');
+    // Reset canvas/img state
+    document.getElementById('videoCanvas').style.display = 'block';
+    document.getElementById('videoImg').style.display = 'none';
+    document.getElementById('playBtn').textContent = '▶ Play Slideshow';
+    document.getElementById('playBtn').disabled = false;
+    slideshowRunning = false;
+  }, 400);
+}
+
+function closeVideo() {
+  slideshowRunning = false;
+  document.getElementById('videoScreen').classList.remove('show');
+  document.getElementById('videoCanvas').style.display = 'block';
+  document.getElementById('videoImg').style.display = 'none';
+  document.getElementById('playBtn').textContent = '▶ Play Slideshow';
+  document.getElementById('playBtn').disabled = false;
+}
+
+// ── SLIDESHOW ──
+const STATION_TAGS = [
+  { name:'白川', haiku:'柳揺れ　街の急ぎを　知らぬまま' },
+  { name:'平安神宮', haiku:'朱の門　千年の風　今も吹く' },
+  { name:'南禅寺', haiku:'この門を入れば　涼風おのつから' },
+  { name:'鴨川', haiku:'石伝い　水の声だけ　聞こえくる' }
+];
+
+const STATION_EN = {
+  '白川':'SHIRAKAWA', '平安神宮':'HEIAN SHRINE',
+  '南禅寺':'NANZEN-JI', '鴨川':'KAMO RIVER'
+};
+
+function playSlideshow() {
+  if (slideshowRunning) return;
+
+  const canvas = document.getElementById('videoCanvas');
+  canvas.style.display = 'block';
+  document.getElementById('videoImg').style.display = 'none';
+
+  // High-res canvas + correct CSS display size
+  const dpr = window.devicePixelRatio || 1;
+  const W = window.innerWidth;
+  const H = window.innerHeight;
+  canvas.width = W * dpr;
+  canvas.height = H * dpr;
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  canvas.style.position = 'absolute';
+  canvas.style.top = '0'; canvas.style.left = '0';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  // From now on use W/H in logical pixels — canvas auto-scales via dpr
+
+  const btn = document.getElementById('playBtn');
+  btn.textContent = '▶ Playing...'; btn.disabled = true;
+  slideshowRunning = true;
+
+  // Preload photos
+  const imgObjs = photos.map(src => {
+    if (!src) return null;
+    const img = new Image();
+    img.src = src;
+    return img;
+  });
+
+  const FPS = 30;
+  const INTRO_DUR   = Math.round(FPS * 6);
+  const HOLD        = Math.round(FPS * 4.0);
+  const FADE        = Math.round(FPS * 1.8);
+  const PER         = HOLD + FADE;
+  const TOTAL_PHOTOS = STATION_TAGS.length * PER;
+  const SUMMARY_DUR = Math.round(FPS * 9);
+  const THANKS_DUR  = Math.round(FPS * 6);
+
+  const PHOTOS_START  = INTRO_DUR;
+  const SUMMARY_START = PHOTOS_START + TOTAL_PHOTOS;
+  const THANKS_START  = SUMMARY_START + SUMMARY_DUR;
+  const TOTAL         = THANKS_START + THANKS_DUR;
+
+  let f = 0;
+
+  function drawIntro(progress) {
+    ctx.fillStyle = '#1a1410'; ctx.fillRect(0,0,W,H);
+    const fade = progress > 0.82 ? Math.max(0, 1-(progress-0.82)/0.18) : 1;
+    const p1 = Math.min(1, progress / 0.38);
+    typewrite('Four Moments', W*0.08, H*0.43, p1,
+      `300 ${W*0.075}px "DM Sans"`, 'rgba(245,240,232,0.92)', fade);
+    if (progress > 0.42) {
+      const p2 = Math.min(1, (progress-0.42) / 0.38);
+      typewrite('One Kyoto Afternoon', W*0.08, H*0.535, p2,
+        `300 italic ${W*0.075}px "DM Sans"`, 'rgba(245,240,232,0.55)', fade);
+    }
+  }
+
+  function drawSummary(progress) {
+    ctx.fillStyle = '#1a1410'; ctx.fillRect(0,0,W,H);
+    const fade = progress > 0.82 ? Math.max(0, 1-(progress-0.82)/0.18) : 1;
+    const lines = [
+      { t:'The city that only',     y:H*0.36, start:0.00, font:`300 ${W*0.058}px "DM Sans"`,        color:'rgba(245,240,232,0.75)' },
+      { t:'reveals itself',         y:H*0.46, start:0.20, font:`300 ${W*0.058}px "DM Sans"`,        color:'rgba(245,240,232,0.75)' },
+      { t:'when you stop rushing', y:H*0.60, start:0.38, font:`300 italic ${W*0.068}px "DM Sans"`, color:'rgba(245,240,232,0.92)' },
+    ];
+    lines.forEach(l => {
+      if (progress < l.start) return;
+      const lp = Math.min(1, (progress - l.start) / 0.22);
+      typewrite(l.t, W*0.08, l.y, lp, l.font, l.color, fade);
+    });
+  }
+
+  function drawThanks(progress) {
+    ctx.fillStyle = '#1a1410'; ctx.fillRect(0,0,W,H);
+    const p1 = Math.min(1, progress / 0.38);
+    ctx.globalAlpha = p1;
+    ctx.fillStyle = 'rgba(245,240,232,0.75)';
+    ctx.font = `300 ${W*0.048}px "DM Sans"`;
+    ctx.letterSpacing = `${W*0.001}px`;
+    ctx.textAlign = 'center';
+    ctx.fillText('Thank you for today', W/2, H*0.42);
+    if (progress > 0.42) {
+      const p2 = Math.min(1, (progress-0.42) / 0.38);
+      ctx.globalAlpha = p2;
+      ctx.fillStyle = 'rgba(160,120,64,0.95)';
+      ctx.font = `600 ${W*0.072}px "DM Sans"`;
+      ctx.letterSpacing = `${W*0.005}px`;
+      ctx.fillText('AMAZING KYOTO', W/2, H*0.535);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawPhoto(imgObj, alpha) {
+    if (!imgObj || !imgObj.complete || !imgObj.naturalWidth) {
+      ctx.fillStyle = '#1a1410'; ctx.fillRect(0,0,W,H); return;
+    }
+    // True cover — scale to fill, crop excess, no distortion
+    const iw = imgObj.naturalWidth, ih = imgObj.naturalHeight;
+    const scale = Math.max(W/iw, H/ih);
+    const dw = iw*scale, dh = ih*scale;
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(imgObj, (W-dw)/2, (H-dh)/2, dw, dh);
+    ctx.globalAlpha = 1;
+  }
+
+  function drawOverlay(cardIdx, alpha) {
+    const s = STATION_TAGS[cardIdx];
+    if (!s) return;
+
+    // Gradients
+    ctx.globalAlpha = alpha * 0.8;
+    const gradBot = ctx.createLinearGradient(0, H*0.6, 0, H);
+    gradBot.addColorStop(0, 'transparent');
+    gradBot.addColorStop(1, 'rgba(10,8,6,0.92)');
+    ctx.fillStyle = gradBot; ctx.fillRect(0,0,W,H);
+    const gradTop = ctx.createLinearGradient(0, 0, 0, H*0.3);
+    gradTop.addColorStop(0, 'rgba(10,8,6,0.55)');
+    gradTop.addColorStop(1, 'transparent');
+    ctx.fillStyle = gradTop; ctx.fillRect(0,0,W,H);
+    ctx.globalAlpha = alpha;
+
+    // Brand top left
+    ctx.fillStyle = 'rgba(245,240,232,0.38)';
+    ctx.font = `500 ${W*0.026}px "DM Sans"`;
+    ctx.textAlign = 'left';
+    ctx.letterSpacing = `${W*0.005}px`;
+    ctx.fillText('AMAZING KYOTO', W*0.06, H*0.07);
+
+    // Station name top right
+    ctx.fillStyle = 'rgba(245,240,232,0.88)';
+    ctx.font = `700 ${W*0.068}px "DM Sans"`;
+    ctx.textAlign = 'right';
+    ctx.letterSpacing = `${W*0.001}px`;
+    ctx.fillText(STATION_EN[s.name] || s.name, W*0.94, H*0.1);
+
+    // Haiku bottom — offscreen canvas with system Japanese font
+    if (haikuImgs[cardIdx]) {
+      ctx.globalAlpha = alpha * 0.85;
+      const hi = haikuImgs[cardIdx];
+      // Scale to fit screen width properly
+      const scale = (W * 0.88) / hi.width;
+      ctx.drawImage(hi, W*0.06, H*0.65, hi.width * scale, hi.height * scale);
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // Pre-render haiku to offscreen canvases
+  const fontSize = Math.round(W * 0.046);
+  const haikuImgs = STATION_TAGS.map(s => {
+    const oc = document.createElement('canvas');
+    oc.width = Math.round(W * 0.88);
+    oc.height = fontSize * 2;
+    const oc2 = oc.getContext('2d');
+    oc2.font = `400 ${fontSize}px "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif`;
+    oc2.fillStyle = 'rgba(245,240,232,0.9)';
+    oc2.textBaseline = 'top';
+    oc2.letterSpacing = `${Math.round(W*0.003)}px`;
+    oc2.fillText(s.haiku, 0, 0);
+    return oc;
+  });
+
+  function typewrite(text, x, y, progress, font, color, alpha) {
+    const chars = Math.floor(progress * text.length);
+    if (chars <= 0) return;
+    ctx.globalAlpha = alpha;
+    ctx.font = font;
+    ctx.fillStyle = color;
+    ctx.textAlign = 'left';
+    ctx.fillText(text.substring(0, chars), x, y);
+    ctx.globalAlpha = 1;
+  }
+
+  function drawOutro(progress) {
+    ctx.fillStyle = '#1a1410'; ctx.fillRect(0,0,W,H);
+
+    if (progress < 0.34) {
+      // PAGE 1: Four Moments → One Kyoto Afternoon
+      const p = progress / 0.34;
+      const fade = p > 0.8 ? Math.max(0, 1-(p-0.8)/0.2) : 1;
+
+      // Line 1 typewrite — left aligned
+      const p1 = Math.min(1, p / 0.42);
+      typewrite('Four Moments', W*0.08, H*0.43, p1,
+        `300 ${W*0.075}px "DM Sans"`, 'rgba(245,240,232,0.92)', fade);
+
+      // Line 2 typewrite — starts after line 1 half done
+      if (p > 0.44) {
+        const p2 = Math.min(1, (p-0.44) / 0.42);
+        typewrite('One Kyoto Afternoon', W*0.08, H*0.535, p2,
+          `300 italic ${W*0.048}px "DM Sans"`, 'rgba(245,240,232,0.48)', fade);
+      }
+
+    } else if (progress < 0.67) {
+      // PAGE 2: The city that only / reveals itself / — / when you stop rushing.
+      const p = (progress - 0.34) / 0.33;
+      const fade = p > 0.8 ? Math.max(0, 1-(p-0.8)/0.2) : 1;
+
+      const lines = [
+        { t:'The city that only',     y:H*0.35, start:0.00, font:`300 ${W*0.058}px "DM Sans"`,        color:'rgba(245,240,232,0.75)' },
+        { t:'reveals itself',         y:H*0.44, start:0.22, font:`300 ${W*0.058}px "DM Sans"`,        color:'rgba(245,240,232,0.75)' },
+        { t:'—',                      y:H*0.51, start:0.42, font:`300 ${W*0.058}px "DM Sans"`,        color:'rgba(160,120,64,0.6)' },
+        { t:'when you stop rushing.', y:H*0.62, start:0.50, font:`300 italic ${W*0.068}px "DM Sans"`, color:'rgba(245,240,232,0.92)' },
+      ];
+
+      lines.forEach(l => {
+        if (p < l.start) return;
+        const lp = Math.min(1, (p - l.start) / 0.24);
+        typewrite(l.t, W*0.08, l.y, lp, l.font, l.color, fade);
+      });
+
+    } else {
+      // PAGE 3: Thank you for today. → AMAZING KYOTO — smooth fade in
+      const p = (progress - 0.67) / 0.33;
+
+      const p1 = Math.min(1, p / 0.4);
+      ctx.globalAlpha = p1;
+      ctx.fillStyle = 'rgba(245,240,232,0.75)';
+      ctx.font = `300 ${W*0.048}px "DM Sans"`;
+      ctx.letterSpacing = `${W*0.001}px`;
+      ctx.textAlign = 'center';
+      ctx.fillText('Thank you for today.', W/2, H*0.42);
+
+      if (p > 0.45) {
+        const p2 = Math.min(1, (p-0.45) / 0.4);
+        ctx.globalAlpha = p2;
+        ctx.fillStyle = 'rgba(160,120,64,0.95)';
+        ctx.font = `600 ${W*0.072}px "DM Sans"`;
+        ctx.letterSpacing = `${W*0.005}px`;
+        ctx.fillText('AMAZING KYOTO', W/2, H*0.535);
+      }
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function tick() {
+    if (!slideshowRunning) return;
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#1a1410'; ctx.fillRect(0,0,W,H);
+
+    if (f < PHOTOS_START) {
+      drawIntro(f / INTRO_DUR);
+    } else if (f < SUMMARY_START) {
+      const pf = f - PHOTOS_START;
+      const cardIdx = Math.floor(pf / PER);
+      const fi = pf % PER;
+      const inA = fi < FPS*0.5 ? fi/(FPS*0.5) : 1;
+      const outA = fi >= HOLD ? Math.max(0, 1-(fi-HOLD)/FADE) : 1;
+      drawPhoto(imgObjs[cardIdx], Math.min(inA, outA));
+      drawOverlay(cardIdx, Math.min(inA, outA));
+    } else if (f < THANKS_START) {
+      drawSummary((f - SUMMARY_START) / SUMMARY_DUR);
+    } else {
+      const tf = f - THANKS_START;
+      drawThanks(tf / THANKS_DUR);
+      if (tf >= THANKS_DUR) {
+        slideshowRunning = false;
+        f = 0;
+        btn.textContent = '▶ Play Again';
+        btn.disabled = false;
+        return;
+      }
+    }
+    f++;
+    requestAnimationFrame(tick);
+  }
+
+  // Preload fonts for canvas rendering
+  Promise.all([
+    document.fonts.load(`400 48px "Noto Serif JP"`),
+    document.fonts.load(`300 48px "DM Sans"`)
+  ]).finally(() => tick());
+}
+</script>
+
+</body>
+</html>
