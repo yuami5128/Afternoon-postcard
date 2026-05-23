@@ -973,7 +973,7 @@ function playSlideshow() {
 
   const FPS = 30;
   const INTRO_DUR   = Math.round(FPS * 8.5);
-  const CYCLE_DUR   = Math.round(FPS * 4.0); // cycling transition page
+  const CYCLE_DUR   = Math.round(FPS * 5.0); // cycling transition page
   const HOLD        = Math.round(FPS * 5.0);
   const FADE        = Math.round(FPS * 2.5);
   const PER         = HOLD + FADE;
@@ -1053,7 +1053,7 @@ function playSlideshow() {
     // Bike rides in from right
     const travel = W * 0.25;
     const startX = W * 0.65 + travel * (1 - Math.min(1, progress * 3));
-    const bikeScale = (W / 320) * 0.65;
+    const bikeScale = (W / 320) * 0.50;
     drawBike(startX, H * 0.44, bikeScale, alpha);
 
     // Label
